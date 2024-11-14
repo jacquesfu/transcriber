@@ -1,104 +1,180 @@
-import React, { useState } from 'react';
-import { Mic, MicOff, MessageSquare } from 'lucide-react';
-import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
-import { Card, CardContent } from '@/components/ui/card';
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sales AI Assistant</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.js"></script>
+    <!-- Updated Lucide import -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <style>
+        .message-bubble {
+            transition: all 0.3s ease;
+        }
+        .recording-button {
+            transition: all 0.2s ease;
+        }
+        .recording-button:hover {
+            transform: scale(1.05);
+        }
+        .transcription-container {
+            scroll-behavior: smooth;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <div class="h-screen flex flex-col">
+        <!-- Header -->
+        <div class="bg-white shadow-sm p-4">
+            <h1 class="text-xl font-semibold text-gray-800">Sales AI Assistant</h1>
+        </div>
 
-const SalesTranscriptionApp = () => {
-  const [isRecording, setIsRecording] = useState(false);
-  const [transcription, setTranscription] = useState([
-    { speaker: "Sales Rep", text: "Hi, thanks for taking my call today!" },
-    { speaker: "Customer", text: "Sure, what's this regarding?" },
-  ]);
-  
-  const [salesTips, setSalesTips] = useState([
-    "Customer seems hesitant - try addressing their concerns directly",
-    "Good opportunity to highlight our unique value proposition",
-    "Remember to ask open-ended questions to keep the conversation flowing"
-  ]);
-
-  const toggleRecording = () => {
-    setIsRecording(!isRecording);
-  };
-
-  return (
-    <div className="h-screen flex flex-col bg-gray-50">
-      {/* Header */}
-      <div className="bg-white shadow-sm p-4">
-        <h1 className="text-xl font-semibold text-gray-800">Sales AI Assistant</h1>
-      </div>
-
-      {/* Main Content */}
-      <div className="flex-1 flex flex-col md:flex-row overflow-hidden">
-        {/* Transcription Section - Top on mobile, left on desktop */}
-        <div className="flex-1 p-4 overflow-y-auto">
-          <div className="bg-white rounded-lg shadow-sm p-4 h-full">
-            <h2 className="text-lg font-medium mb-4">Live Transcription</h2>
-            <div className="space-y-4">
-              {transcription.map((entry, index) => (
-                <div 
-                  key={index} 
-                  className={`flex gap-2 ${
-                    entry.speaker === "Sales Rep" ? "flex-row" : "flex-row-reverse"
-                  }`}
-                >
-                  <div className={`flex-1 max-w-[80%] ${
-                    entry.speaker === "Sales Rep" 
-                      ? "bg-blue-100 rounded-tr-lg rounded-br-lg rounded-bl-lg" 
-                      : "bg-gray-100 rounded-tl-lg rounded-bl-lg rounded-br-lg"
-                  } p-3`}>
-                    <p className="text-sm font-medium text-gray-600">{entry.speaker}</p>
-                    <p className="text-gray-800">{entry.text}</p>
-                  </div>
+        <!-- Main Content -->
+        <div class="flex-1 flex flex-col md:flex-row overflow-hidden">
+            <!-- Transcription Section -->
+            <div class="flex-1 p-4 overflow-y-auto">
+                <div class="bg-white rounded-lg shadow-sm p-4 h-full">
+                    <h2 class="text-lg font-medium mb-4">Live Transcription</h2>
+                    <div id="transcription-container" class="space-y-4 transcription-container">
+                        <!-- Transcriptions will be inserted here -->
+                    </div>
                 </div>
-              ))}
             </div>
-          </div>
+
+            <!-- Tips Section -->
+            <div class="w-full md:w-80 p-4 bg-gray-50">
+                <div class="bg-white rounded-lg shadow p-6">
+                    <h2 class="text-lg font-medium mb-4 flex items-center gap-2">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                        </svg>
+                        Real-time Tips
+                    </h2>
+                    <div id="tips-container" class="space-y-3">
+                        <!-- Tips will be inserted here -->
+                    </div>
+                </div>
+            </div>
         </div>
 
-        {/* Tips Section - Bottom on mobile, right on desktop */}
-        <div className="w-full md:w-80 p-4 bg-gray-50">
-          <Card>
-            <CardContent className="pt-6">
-              <h2 className="text-lg font-medium mb-4 flex items-center gap-2">
-                <MessageSquare className="w-5 h-5" />
-                Real-time Tips
-              </h2>
-              <div className="space-y-3">
-                {salesTips.map((tip, index) => (
-                  <Alert key={index} className="bg-blue-50 border-blue-200">
-                    <AlertTitle className="text-blue-800 text-sm font-medium">
-                      Tip {index + 1}
-                    </AlertTitle>
-                    <AlertDescription className="text-blue-700 text-sm">
-                      {tip}
-                    </AlertDescription>
-                  </Alert>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
+        <!-- Recording Button -->
+        <div class="fixed bottom-6 left-1/2 transform -translate-x-1/2">
+            <button
+                id="recordButton"
+                class="recording-button rounded-full p-4 shadow-lg bg-blue-500 hover:bg-blue-600"
+                onclick="toggleRecording()"
+            >
+                <svg id="micIcon" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
+                    <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+                    <line x1="12" y1="19" x2="12" y2="23"></line>
+                    <line x1="8" y1="23" x2="16" y2="23"></line>
+                </svg>
+            </button>
         </div>
-      </div>
-
-      {/* Recording Button - Fixed at bottom */}
-      <div className="fixed bottom-6 left-1/2 transform -translate-x-1/2">
-        <button
-          onClick={toggleRecording}
-          className={`rounded-full p-4 shadow-lg transition-all ${
-            isRecording 
-              ? 'bg-red-500 hover:bg-red-600' 
-              : 'bg-blue-500 hover:bg-blue-600'
-          }`}
-        >
-          {isRecording ? (
-            <MicOff className="w-8 h-8 text-white" />
-          ) : (
-            <Mic className="w-8 h-8 text-white" />
-          )}
-        </button>
-      </div>
     </div>
-  );
-};
 
-export default SalesTranscriptionApp;
+    <script>
+        let isRecording = false;
+        const transcription = [
+            { speaker: "Sales Rep", text: "Hi, this is Sarah from TranscriptPro. Am I speaking with the head of sales?" },
+            { speaker: "Customer", text: "Yes, this is Mike. What's this regarding?" },
+            { speaker: "Sales Rep", text: "Thanks for taking my call, Mike. I noticed your company has been scaling its sales team recently. I work with sales leaders who are looking to improve their team's performance through AI-powered call analysis. Does that sound relevant to your current priorities?" },
+            { speaker: "Customer", text: "We are expanding, but we're pretty busy right now. What exactly does your software do?" },
+            { speaker: "Sales Rep", text: "I appreciate you asking. TranscriptPro automatically transcribes and analyzes all your sales calls in real-time. It provides instant feedback to your reps and gives managers detailed insights into conversation patterns that lead to successful deals. What tools are you currently using to coach your team?" },
+            { speaker: "Customer", text: "We do random call reviews when we can, but it's not very systematic. How much time does this actually save?" },
+            { speaker: "Sales Rep", text: "Great question. Our current clients report saving about 5 hours per week per manager on call reviews, while actually increasing coaching coverage to 100% of calls. Would that kind of time savings be valuable for your sales managers?" },
+            { speaker: "Customer", text: "That's interesting. But I'm concerned about the cost and how long it takes to implement something like this." },
+            { speaker: "Sales Rep", text: "I understand completely. We've actually designed our pricing to scale with your team size, starting at just $49 per rep per month. As for implementation, we can have you up and running in less than a day - it's just a simple Chrome extension and Zoom integration. Would you be open to a quick 15-minute demo this week to see it in action?" },
+            { speaker: "Customer", text: "Maybe... but I'd need to discuss this with my team first." },
+            { speaker: "Sales Rep", text: "That makes sense, Mike. Why don't I send you a quick overview video you can share with your team? Then we can schedule a demo that works for everyone. What's the best email to reach you at?" },
+            { speaker: "Customer", text: "Sure, you can send it to mike@company.com" },
+            { speaker: "Sales Rep", text: "Perfect, I'll send that right over. Just to confirm our discussion - you mentioned time savings for managers and systematic coaching are priorities, and pricing and implementation time were key concerns. Did I catch everything correctly?" },
+            { speaker: "Customer", text: "Yes, that's right." },
+            { speaker: "Sales Rep", text: "Great! I'll include specific information about those points in my email. Would Tuesday or Wednesday afternoon work best for a follow-up demo with your team?" }
+        ];
+        
+        const salesTips = [
+            "Customer showing timeline concern - emphasize quick implementation and immediate ROI",
+            "Price objection raised - link pricing structure to value metrics just shared",
+            "Good opportunity to secure next steps - suggest sharing demo with wider team"
+        ];
+
+        function renderTranscription() {
+            const container = document.getElementById('transcription-container');
+            container.innerHTML = '';
+            
+            transcription.forEach(entry => {
+                const messageDiv = document.createElement('div');
+                messageDiv.className = `flex gap-2 ${entry.speaker === "Sales Rep" ? "flex-row" : "flex-row-reverse"}`;
+                
+                messageDiv.innerHTML = `
+                    <div class="flex-1 max-w-[80%] message-bubble ${
+                        entry.speaker === "Sales Rep" 
+                            ? "bg-blue-100 rounded-tr-lg rounded-br-lg rounded-bl-lg" 
+                            : "bg-gray-100 rounded-tl-lg rounded-bl-lg rounded-br-lg"
+                    } p-3">
+                        <p class="text-sm font-medium text-gray-600">${entry.speaker}</p>
+                        <p class="text-gray-800">${entry.text}</p>
+                    </div>
+                `;
+                
+                container.appendChild(messageDiv);
+            });
+
+            // Scroll to bottom
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function renderTips() {
+            const container = document.getElementById('tips-container');
+            container.innerHTML = '';
+            
+            salesTips.forEach((tip, index) => {
+                const alertDiv = document.createElement('div');
+                alertDiv.className = 'bg-blue-50 border border-blue-200 rounded-lg p-4';
+                
+                alertDiv.innerHTML = `
+                    <h3 class="text-blue-800 text-sm font-medium">Tip ${index + 1}</h3>
+                    <p class="text-blue-700 text-sm mt-1">${tip}</p>
+                `;
+                
+                container.appendChild(alertDiv);
+            });
+        }
+
+        function toggleRecording() {
+            isRecording = !isRecording;
+            const button = document.getElementById('recordButton');
+            const micIcon = document.getElementById('micIcon');
+            
+            if (isRecording) {
+                button.classList.remove('bg-blue-500', 'hover:bg-blue-600');
+                button.classList.add('bg-red-500', 'hover:bg-red-600');
+                // Change to mic-off icon
+                micIcon.innerHTML = `
+                    <path d="M1 1l22 22M9 9v3a3 3 0 0 0 5.12 2.12M15 9.34V4a3 3 0 0 0-5.94-.6"></path>
+                    <path d="M17 16.95A7 7 0 0 1 5 12v-2m14 0v2a7 7 0 0 1-.11 1.23"></path>
+                    <line x1="12" y1="19" x2="12" y2="23"></line>
+                    <line x1="8" y1="23" x2="16" y2="23"></line>
+                `;
+            } else {
+                button.classList.remove('bg-red-500', 'hover:bg-red-600');
+                button.classList.add('bg-blue-500', 'hover:bg-blue-600');
+                // Change to mic icon
+                micIcon.innerHTML = `
+                    <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
+                    <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+                    <line x1="12" y1="19" x2="12" y2="23"></line>
+                    <line x1="8" y1="23" x2="16" y2="23"></line>
+                `;
+            }
+        }
+
+        // Initial render
+        renderTranscription();
+        renderTips();
+    </script>
+</body>
+</html>
