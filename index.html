@@ -1,0 +1,104 @@
+import React, { useState } from 'react';
+import { Mic, MicOff, MessageSquare } from 'lucide-react';
+import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
+import { Card, CardContent } from '@/components/ui/card';
+
+const SalesTranscriptionApp = () => {
+  const [isRecording, setIsRecording] = useState(false);
+  const [transcription, setTranscription] = useState([
+    { speaker: "Sales Rep", text: "Hi, thanks for taking my call today!" },
+    { speaker: "Customer", text: "Sure, what's this regarding?" },
+  ]);
+  
+  const [salesTips, setSalesTips] = useState([
+    "Customer seems hesitant - try addressing their concerns directly",
+    "Good opportunity to highlight our unique value proposition",
+    "Remember to ask open-ended questions to keep the conversation flowing"
+  ]);
+
+  const toggleRecording = () => {
+    setIsRecording(!isRecording);
+  };
+
+  return (
+    <div className="h-screen flex flex-col bg-gray-50">
+      {/* Header */}
+      <div className="bg-white shadow-sm p-4">
+        <h1 className="text-xl font-semibold text-gray-800">Sales AI Assistant</h1>
+      </div>
+
+      {/* Main Content */}
+      <div className="flex-1 flex flex-col md:flex-row overflow-hidden">
+        {/* Transcription Section - Top on mobile, left on desktop */}
+        <div className="flex-1 p-4 overflow-y-auto">
+          <div className="bg-white rounded-lg shadow-sm p-4 h-full">
+            <h2 className="text-lg font-medium mb-4">Live Transcription</h2>
+            <div className="space-y-4">
+              {transcription.map((entry, index) => (
+                <div 
+                  key={index} 
+                  className={`flex gap-2 ${
+                    entry.speaker === "Sales Rep" ? "flex-row" : "flex-row-reverse"
+                  }`}
+                >
+                  <div className={`flex-1 max-w-[80%] ${
+                    entry.speaker === "Sales Rep" 
+                      ? "bg-blue-100 rounded-tr-lg rounded-br-lg rounded-bl-lg" 
+                      : "bg-gray-100 rounded-tl-lg rounded-bl-lg rounded-br-lg"
+                  } p-3`}>
+                    <p className="text-sm font-medium text-gray-600">{entry.speaker}</p>
+                    <p className="text-gray-800">{entry.text}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Tips Section - Bottom on mobile, right on desktop */}
+        <div className="w-full md:w-80 p-4 bg-gray-50">
+          <Card>
+            <CardContent className="pt-6">
+              <h2 className="text-lg font-medium mb-4 flex items-center gap-2">
+                <MessageSquare className="w-5 h-5" />
+                Real-time Tips
+              </h2>
+              <div className="space-y-3">
+                {salesTips.map((tip, index) => (
+                  <Alert key={index} className="bg-blue-50 border-blue-200">
+                    <AlertTitle className="text-blue-800 text-sm font-medium">
+                      Tip {index + 1}
+                    </AlertTitle>
+                    <AlertDescription className="text-blue-700 text-sm">
+                      {tip}
+                    </AlertDescription>
+                  </Alert>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+
+      {/* Recording Button - Fixed at bottom */}
+      <div className="fixed bottom-6 left-1/2 transform -translate-x-1/2">
+        <button
+          onClick={toggleRecording}
+          className={`rounded-full p-4 shadow-lg transition-all ${
+            isRecording 
+              ? 'bg-red-500 hover:bg-red-600' 
+              : 'bg-blue-500 hover:bg-blue-600'
+          }`}
+        >
+          {isRecording ? (
+            <MicOff className="w-8 h-8 text-white" />
+          ) : (
+            <Mic className="w-8 h-8 text-white" />
+          )}
+        </button>
+      </div>
+    </div>
+  );
+};
+
+export default SalesTranscriptionApp;
